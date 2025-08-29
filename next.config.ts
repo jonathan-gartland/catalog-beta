@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
+  images: {
+    unoptimized: true,
+    domains: [],
+  },
+  trailingSlash: false,
+  experimental: {
+    optimizePackageImports: [],
+  },
 };
 
 export default nextConfig;
