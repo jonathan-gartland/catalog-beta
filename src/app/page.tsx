@@ -3,7 +3,6 @@
 import { useState, useMemo } from 'react';
 import { whiskeyCollection } from '@/data/whiskey-data';
 import { calculateWhiskeyStats, formatCurrency } from '@/utils/whiskey-stats';
-import { useWhiskeyData } from '@/hooks/useWhiskeyData';
 import { WhiskeyBottle } from '@/types/whiskey';
 import StatsCard from '@/components/StatsCard';
 import WhiskeyCard from '@/components/WhiskeyCard';
@@ -24,14 +23,10 @@ export default function Home() {
     sortOrder: 'asc'
   });
 
-  const [dataSource] = useState<'local' | 'sheets'>('local');
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // Google Sheets data hook
-  const { data: sheetsData, loading, addWhiskey } = useWhiskeyData();
-
-  // Choose data source
-  const currentData = dataSource === 'sheets' ? sheetsData : whiskeyCollection;
+  // Use the local whiskey data directly
+  const currentData = whiskeyCollection;
 
   // Calculate stats
   const stats = useMemo(() => calculateWhiskeyStats(currentData), [currentData]);
@@ -87,13 +82,9 @@ export default function Home() {
     : 0;
 
   const handleAddWhiskey = async (whiskey: WhiskeyBottle) => {
-    if (dataSource === 'sheets') {
-      return await addWhiskey(whiskey);
-    } else {
-      // For local data, just close the form (you'd implement local storage or other persistence here)
-      console.log('Adding whiskey to local data:', whiskey);
-      return true;
-    }
+    // For now, just log the whiskey data (could implement local storage later)
+    console.log('Adding whiskey to local data:', whiskey);
+    return true;
   };
 
   return (
@@ -216,7 +207,6 @@ export default function Home() {
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
             Showing {filteredBottles.length} of {currentData.length} bottles
-            {dataSource === 'sheets' && loading && ' (loading...)'}
           </p>
         </div>
 
@@ -226,23 +216,13 @@ export default function Home() {
           ))}
         </div>
 
-        {filteredBottles.length === 0 && !loading && (
+        {filteredBottles.length === 0 && (
           <div className="text-center py-12">
             <p className="text-gray-500 dark:text-gray-400 text-lg">
               {currentData.length === 0 
                 ? 'No whiskey data available.' 
                 : 'No bottles match your current filters.'
               }
-            </p>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {loading && dataSource === 'sheets' && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-500 dark:text-gray-400 text-lg">
-              Loading whiskey data from Google Sheets...
             </p>
           </div>
         )}
