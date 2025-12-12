@@ -1,16 +1,18 @@
+import { WhiskeyCountry, WhiskeyType, BottleStatus, BottleSize } from '@/constants/whiskey';
+
 export interface WhiskeyBottle {
   name: string;
   quantity: number;
-  country: string;
-  type: string;
+  country: string; // WhiskeyCountry enum value
+  type: string; // WhiskeyType enum value
   region: string;
   distillery: string;
   age: string;
   purchaseDate: string;
   abv: number;
-  size: string;
+  size: string; // BottleSize enum value
   purchasePrice: number;
-  status: string;
+  status: string; // BottleStatus enum value
   batch: string;
   notes: string;
   currentValue: number;

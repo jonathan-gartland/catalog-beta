@@ -3,6 +3,7 @@ import { WhiskeyBottle } from '@/types/whiskey';
 import { formatCurrency } from '@/utils/whiskey-stats';
 import { getBottleImage } from '@/utils/bottleImages';
 import { useAuth } from '@/contexts/AuthContext';
+import Card from './ui/Card';
 
 interface WhiskeyCardProps {
   bottle: WhiskeyBottle;
@@ -10,19 +11,19 @@ interface WhiskeyCardProps {
 
 export default function WhiskeyCard({ bottle }: WhiskeyCardProps) {
   const { isAuthorized } = useAuth();
-  
+
   // Use replacement cost if available, otherwise fall back to current value per bottle
-  const displayValue = bottle.replacementCost ?? (bottle.currentValue / bottle.quantity);
-  const gainLoss = displayValue - (bottle.purchasePrice * bottle.quantity);
-  const gainLossPercentage = bottle.purchasePrice > 0 
-    ? ((gainLoss / (bottle.purchasePrice * bottle.quantity)) * 100)
-    : 0;
+  const displayValue = bottle.replacementCost ?? bottle.currentValue / bottle.quantity;
+  const totalPurchasePrice = bottle.purchasePrice * bottle.quantity;
+  const gainLoss = displayValue - totalPurchasePrice;
+  const gainLossPercentage =
+    totalPurchasePrice > 0 ? (gainLoss / totalPurchasePrice) * 100 : 0;
 
   const isGain = gainLoss > 0;
   const isLoss = gainLoss < 0;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow">
+    <Card hover className="p-6" role="article" aria-label={`Whiskey: ${bottle.name}`}>
       {/* Bottle Image */}
       <div className="mb-4 flex justify-center">
         <div className="relative w-24 h-32 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
@@ -132,6 +133,6 @@ export default function WhiskeyCard({ bottle }: WhiskeyCardProps) {
           <span>Status: {bottle.status}</span>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
