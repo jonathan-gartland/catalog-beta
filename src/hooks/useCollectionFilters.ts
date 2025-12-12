@@ -32,7 +32,7 @@ export function useCollectionFilters(collection: WhiskeyBottle[]) {
   }, []);
 
   const filteredAndSorted = useMemo(() => {
-    let filtered = collection.filter((bottle) => {
+    const filtered = collection.filter((bottle) => {
       const matchesSearch =
         !filters.search ||
         bottle.name.toLowerCase().includes(filters.search.toLowerCase()) ||

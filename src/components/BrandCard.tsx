@@ -18,14 +18,17 @@ export default function BrandCard({ brand, onClick, onExpressionClick }: BrandCa
   // Group bottles by expression
   const expressions = groupByExpression(brand.bottles);
 
-  const handleExpressionClick = (e: React.MouseEvent, expressionName: string) => {
-    e.stopPropagation(); // Prevent card click
+  const handleExpressionClick = (expressionName: string) => {
     if (onExpressionClick) {
       onExpressionClick(expressionName);
     } else {
       // Default: navigate to brand detail page
       onClick();
     }
+  };
+
+  const handleExpressionClickWithEvent = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
   };
 
   return (
@@ -82,14 +85,17 @@ export default function BrandCard({ brand, onClick, onExpressionClick }: BrandCa
             return (
               <div
                 key={expression.expressionName}
-                onClick={(e) => handleExpressionClick(e, expression.expressionName)}
+                onClick={(e) => {
+                  handleExpressionClickWithEvent(e);
+                  handleExpressionClick(expression.expressionName);
+                }}
                 className="p-2 rounded-md bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors border border-gray-200 dark:border-gray-700"
                 role="button"
                 tabIndex={0}
-                onKeyDown={(e) => {
+                onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                   if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
-                    handleExpressionClick(e as any, expression.expressionName);
+                    handleExpressionClick(expression.expressionName);
                   }
                 }}
               >
@@ -124,14 +130,17 @@ export default function BrandCard({ brand, onClick, onExpressionClick }: BrandCa
           return (
             <div
               key={expression.expressionName}
-              onClick={(e) => handleExpressionClick(e, expression.expressionName)}
+              onClick={(e) => {
+                handleExpressionClickWithEvent(e);
+                handleExpressionClick(expression.expressionName);
+              }}
               className="p-2 rounded-md bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors border border-gray-200 dark:border-gray-700"
               role="button"
               tabIndex={0}
-              onKeyDown={(e) => {
+              onKeyDown={(e: React.KeyboardEvent<HTMLDivElement>) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  handleExpressionClick(e as any, expression.expressionName);
+                  handleExpressionClick(expression.expressionName);
                 }
               }}
             >

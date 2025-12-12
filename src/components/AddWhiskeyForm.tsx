@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import { WhiskeyBottle } from '@/types/whiskey';
 import {
-  WhiskeyCountry,
-  WhiskeyType,
   BottleStatus,
   BottleSize,
   WHISKEY_COUNTRIES,
