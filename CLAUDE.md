@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-This file provides context and guidelines for AI assistance on this project.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-This is a **Whiskey Collection Tracker** - a Next.js application for tracking and managing a premium whiskey collection with detailed insights, valuations, and analytics.
+A Next.js application for tracking and managing a premium whiskey collection with detailed insights, valuations, and analytics. The app uses a hierarchical navigation structure: Brands → Brand Details → Bottle Details.
 
 ## Technology Stack
 
@@ -14,124 +14,155 @@ This is a **Whiskey Collection Tracker** - a Next.js application for tracking an
 - **Styling**: Tailwind CSS v4
 - **Build Tool**: Next.js built-in build system
 - **Linting**: ESLint with Next.js config
+- **Git Hooks**: Husky with lint-staged and commitlint
+
+## Development Commands
+
+```bash
+# Development
+npm run dev              # Start development server on localhost:3000
+npm run build            # Build for production
+npm start                # Start production server
+
+# Quality checks
+npm run lint             # Run ESLint
+npm run type-check       # Run TypeScript type checking (tsc --noEmit)
+npm run clean            # Remove build artifacts (.next, out, dist)
+
+# Git hooks (run automatically)
+# pre-commit: runs lint-staged (ESLint + type-check on staged .ts/.tsx files)
+# commit-msg: runs commitlint (conventional commits)
+```
+
+## Architecture
+
+### View Hierarchy
+
+The app uses a three-tiered drill-down navigation:
+
+1. **Brands View** (`viewMode: 'brands'`)
+   - Shows all brands grouped from the collection
+   - Uses `groupByBrand()` from `src/utils/brand-utils.ts`
+   - Brand extraction logic handles single-word brands (e.g., "Ardbeg") vs multi-word brands (e.g., "Elijah Craig")
+
+2. **Brand Detail View** (`viewMode: 'brand-detail'`)
+   - Shows all expressions for a selected brand
+   - Uses `groupByExpression()` from `src/utils/expression-utils.ts`
+   - Displays expressions with aggregate stats (total bottles, sizes available)
+
+3. **Bottle Detail View** (`viewMode: 'bottle-detail'`)
+   - Shows individual bottles for a selected expression
+   - Displays detailed bottle information and statistics
+
+### Key Architectural Patterns
+
+**Data Flow**:
+- Single source of truth: `src/data/whiskey-data.ts` (array of `WhiskeyBottle` objects)
+- All views derive data from this array using utility functions
+- State managed with React hooks (useState, useMemo)
+
+**Grouping Logic**:
+- Brand grouping: Extracts brand from bottle name (e.g., "Elijah Craig Barrel Proof" → "Elijah Craig")
+- Expression grouping: Groups bottles by exact name match (same expression = same name)
+
+**Authentication**:
+- Simple password-based auth using AuthContext
+- Stored in localStorage as 'whiskey-auth'
+- Controls visibility of financial data (prices, valuations)
+
+**UI Components**:
+- Custom UI primitives in `src/components/ui/` (Button, Card, Input, Select, Modal)
+- Feature components in `src/components/` (BrandCard, ExpressionCard, WhiskeyCard, etc.)
+- All components are client components (`'use client'`)
 
 ## Project Structure
 
 ```
 src/
-├── app/                    # Next.js app directory
-│   ├── layout.tsx         # Root layout component
-│   ├── page.tsx           # Main page component (home)
-│   └── globals.css        # Global styles
-├── components/            # Reusable React components
-│   ├── AddWhiskeyForm.tsx # Form for adding new whiskeys
-│   ├── AuthToggle.tsx     # Authentication toggle component
-│   ├── FilterControls.tsx # Search and filter controls
-│   ├── StatsCard.tsx      # Statistics display cards
-│   └── WhiskeyCard.tsx    # Individual bottle cards
-├── contexts/              # React contexts
-│   └── AuthContext.tsx    # Authentication context
-├── data/                  # Data files
-│   └── whiskey-data.ts    # Whiskey collection data
-├── types/                 # TypeScript type definitions
-│   └── whiskey.ts         # Whiskey-related interfaces
-└── utils/                 # Utility functions
-    ├── bottleImages.ts    # Bottle image utilities
-    └── whiskey-stats.ts   # Statistics calculations
+├── app/                      # Next.js App Router
+│   ├── layout.tsx           # Root layout with AuthProvider
+│   ├── page.tsx             # Main page with view mode logic
+│   └── globals.css          # Global styles and Tailwind imports
+├── components/              # React components
+│   ├── ui/                  # Reusable UI primitives
+│   │   ├── Button.tsx
+│   │   ├── Card.tsx
+│   │   ├── Input.tsx
+│   │   ├── Select.tsx
+│   │   └── Modal.tsx
+│   ├── BrandCard.tsx        # Brand list view card
+│   ├── BrandDetailView.tsx  # Brand detail page
+│   ├── ExpressionCard.tsx   # Expression card in brand detail
+│   ├── BottleDetailView.tsx # Bottle detail page
+│   ├── WhiskeyCard.tsx      # Individual bottle card
+│   ├── StatsCard.tsx        # Statistics display card
+│   ├── FilterControls.tsx   # Search/filter UI (if used)
+│   ├── AddWhiskeyForm.tsx   # Add new whiskey form
+│   └── AuthToggle.tsx       # Auth toggle component
+├── contexts/
+│   └── AuthContext.tsx      # Authentication context provider
+├── constants/
+│   └── whiskey.ts           # Enums (WhiskeyCountry, WhiskeyType, BottleStatus, BottleSize)
+├── data/
+│   └── whiskey-data.ts      # Collection data array (whiskeyCollection)
+├── hooks/
+│   ├── useDebounce.ts       # Debounce hook
+│   └── useCollectionFilters.ts # Collection filtering logic
+├── types/
+│   └── whiskey.ts           # WhiskeyBottle, WhiskeyStats interfaces
+└── utils/
+    ├── whiskey-stats.ts     # calculateWhiskeyStats, formatCurrency
+    ├── brand-utils.ts       # groupByBrand, extractBrandName, getBottlesByBrand
+    ├── expression-utils.ts  # groupByExpression
+    └── bottleImages.ts      # Bottle image path utilities
 ```
 
-## Key Conventions
+## Key Files and Their Purpose
 
-### Component Patterns
-- All components are client components (use `'use client'` directive)
-- Components use functional components with hooks
-- TypeScript interfaces are defined in `src/types/`
-- Components are located in `src/components/`
+### Core Data and Types
+- `src/types/whiskey.ts` - TypeScript interfaces (WhiskeyBottle, WhiskeyStats)
+- `src/constants/whiskey.ts` - Enums for country, type, status, size
+- `src/data/whiskey-data.ts` - Primary data source (array of bottles)
 
-### Data Management
-- Primary data source: `src/data/whiskey-data.ts`
-- Data structure follows `WhiskeyBottle` interface from `src/types/whiskey.ts`
-- Statistics calculated using utilities in `src/utils/whiskey-stats.ts`
+### Grouping and Statistics
+- `src/utils/brand-utils.ts` - Brand extraction and grouping logic
+  - `SINGLE_WORD_BRANDS` array defines brands that are always one word
+  - `extractBrandName()` handles brand name parsing
+  - `groupByBrand()` creates BrandGroup objects with aggregated stats
+- `src/utils/expression-utils.ts` - Expression grouping (by exact name match)
+- `src/utils/whiskey-stats.ts` - Portfolio statistics calculations
 
-### Styling
-- Uses Tailwind CSS utility classes
-- Supports dark mode (dark: variants)
-- Responsive design with mobile-first approach
-- Card-based layout for visual consistency
+### View Components
+- `src/app/page.tsx` - Main orchestrator with view mode state machine
+- `src/components/BrandDetailView.tsx` - Shows expressions for a brand
+- `src/components/BottleDetailView.tsx` - Shows individual bottles for an expression
 
-### State Management
-- Uses React hooks (useState, useMemo, useContext)
-- Filter state managed in main page component
-- Auth state managed via AuthContext
+## Adding New Bottles to Data
 
-## Important Files
+1. Edit `src/data/whiskey-data.ts`
+2. Add new object to `whiskeyCollection` array matching `WhiskeyBottle` interface
+3. All fields are required except `replacementCost` (optional)
+4. Use enum values from `src/constants/whiskey.ts` for country, type, status, size
 
-### `src/types/whiskey.ts`
-Defines the `WhiskeyBottle` interface and related types. This is the source of truth for data structure.
+## Modifying Brand Grouping Logic
 
-### `src/data/whiskey-data.ts`
-Contains the whiskey collection data array. This is the primary data source when not using Google Sheets.
+If a brand is incorrectly grouped (e.g., "Highland Park" being split):
+1. Add the brand to `SINGLE_WORD_BRANDS` array in `src/utils/brand-utils.ts`
+2. Or modify the `extractBrandName()` function logic
 
-### `src/utils/whiskey-stats.ts`
-Contains calculation functions for collection statistics (totals, breakdowns, etc.).
+## Data Source
 
-### `src/utils/bottleImages.ts`
-Handles bottle image paths and fallbacks.
+The whiskey collection data in `src/data/whiskey-data.ts` is manually maintained. There is a sibling Python project (`../liquor_app/`) that syncs data from Google Sheets to PostgreSQL, but there is **no automatic sync** between that database and this Next.js app.
 
-### `src/components/FilterControls.tsx`
-Manages filtering and sorting state. The `FilterState` interface defines available filter options.
-
-## Development Guidelines
-
-### Adding New Features
-1. Create components in `src/components/`
-2. Define types in `src/types/` if needed
-3. Add utilities to `src/utils/` for reusable logic
-4. Follow existing component patterns and styling
-
-### Code Style
-- Use TypeScript for all files
-- Prefer functional components over class components
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Follow Next.js 15 conventions (App Router)
-
-### Performance Considerations
-- Use `useMemo` for expensive calculations
-- Use `React.memo` for components that re-render frequently
-- Optimize image loading (bottle images in `public/bottles/`)
-- Client-side filtering is used for performance
-
-### Testing
-- Run `npm run type-check` to verify TypeScript types
-- Run `npm run lint` to check code quality
-- Use `npm run dev` for local development
-
-## Environment Variables
-
-See `env.example` for required environment variables. The project supports optional Google Sheets integration.
-
-## Common Tasks
-
-### Adding a New Whiskey
-- Use the `AddWhiskeyForm` component
-- Data should match the `WhiskeyBottle` interface
-- Bottle images should be added to `public/bottles/`
-
-### Modifying Filters
-- Update `FilterState` interface in `FilterControls.tsx`
-- Add filter logic in `page.tsx` filteredBottles useMemo
-- Update filter UI in `FilterControls.tsx`
-
-### Updating Statistics
-- Modify calculation functions in `src/utils/whiskey-stats.ts`
-- Statistics are recalculated automatically when data changes
+To update data from the spreadsheet:
+1. Run the sync in the `liquor_app` project: `python3 sync_from_sheets.py`
+2. Export data from PostgreSQL
+3. Manually update `src/data/whiskey-data.ts` with the new data
 
 ## Notes
 
-- The project uses Next.js 15 App Router (not Pages Router)
-- All components are client-side by default
-- Dark mode is supported via Tailwind dark: variants
-- Bottle images use placeholder fallback if not found
-- Authentication context controls visibility of sensitive financial data
-
+- Images stored in `public/bottles/` with fallback handling
+- Dark mode supported via Tailwind `dark:` variants
+- All components are client-side rendered
+- Type checking runs automatically on pre-commit via lint-staged
+- Commitlint enforces conventional commit format
