@@ -31,7 +31,7 @@ export default function WhiskeyCard({ bottle }: WhiskeyCardProps) {
             src={getBottleImage(bottle.name)}
             alt={`${bottle.name} bottle`}
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="(max-width: 768px) 96px, 96px"
             onError={(e) => {
               // Fallback to placeholder if image fails to load

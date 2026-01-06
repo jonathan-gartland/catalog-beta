@@ -41,7 +41,7 @@ export default function BottleDetailView({ expression, onBack, brand }: BottleDe
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <Button
@@ -56,15 +56,15 @@ export default function BottleDetailView({ expression, onBack, brand }: BottleDe
             <span>Back to {brand}</span>
           </Button>
 
-          <div className="flex flex-col md:flex-row gap-6 mb-6">
+          <div className="flex flex-col gap-6 mb-6">
             {/* Bottle Image */}
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex justify-center">
               <div className="relative w-48 h-64 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                 <Image
                   src={imagePath}
                   alt={`${expression.expressionName} bottle`}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   sizes="192px"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -132,7 +132,7 @@ export default function BottleDetailView({ expression, onBack, brand }: BottleDe
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Financial Details
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <Card className="p-6">
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                   Total Investment
@@ -199,7 +199,7 @@ export default function BottleDetailView({ expression, onBack, brand }: BottleDe
             Bottle Details
           </h2>
           <Card className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-6">
               <div>
                 <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                   Status
@@ -315,7 +315,7 @@ export default function BottleDetailView({ expression, onBack, brand }: BottleDe
               Pricing Details
             </h2>
             <Card className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                     Purchase Price (per bottle)

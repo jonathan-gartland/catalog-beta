@@ -1,7 +1,7 @@
 import { BrandGroup } from '@/utils/brand-utils';
 import { groupByExpression } from '@/utils/expression-utils';
 import Card from './ui/Card';
-import { getBottleImage } from '@/utils/bottleImages';
+import { getBrandImage } from '@/utils/bottleImages';
 import Image from 'next/image';
 
 interface BrandCardProps {
@@ -13,7 +13,7 @@ interface BrandCardProps {
 export default function BrandCard({ brand, onClick, onExpressionClick }: BrandCardProps) {
   // Get the first bottle's image as a representative image
   const representativeBottle = brand.bottles[0];
-  const imagePath = getBottleImage(representativeBottle.name);
+  const imagePath = getBrandImage(brand.brand, representativeBottle.name);
 
   // Group bottles by expression
   const expressions = groupByExpression(brand.bottles);
@@ -53,7 +53,7 @@ export default function BrandCard({ brand, onClick, onExpressionClick }: BrandCa
             src={imagePath}
             alt={`${brand.brand} bottle`}
             fill
-            className="object-cover"
+            className="object-contain"
             sizes="(max-width: 768px) 128px, 128px"
             onError={(e) => {
               const target = e.target as HTMLImageElement;

@@ -38,7 +38,7 @@ export default function ExpressionCard({ expression, onClick }: ExpressionCardPr
               src={imagePath}
               alt={`${expression.expressionName} bottle`}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="80px"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;

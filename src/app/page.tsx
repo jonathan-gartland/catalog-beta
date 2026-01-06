@@ -24,6 +24,8 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>('brands');
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [selectedExpression, setSelectedExpression] = useState<string | null>(null);
+  const [statsExpanded, setStatsExpanded] = useState(true);
+  const [brandsExpanded, setBrandsExpanded] = useState(true);
 
   // Use the local whiskey data directly
   const currentData = whiskeyCollection;
@@ -125,7 +127,7 @@ export default function Home() {
   // Show brands view (default)
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -155,8 +157,30 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {/* Collection Overview Section */}
+        <div className="mb-8">
+          <button
+            onClick={() => setStatsExpanded(!statsExpanded)}
+            className="w-full flex items-center justify-between mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-expanded={statsExpanded}
+          >
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Collection Overview
+            </h2>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${statsExpanded ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {statsExpanded && (
+            <>
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 gap-6 mb-8">
           <StatsCard
             title="Total Brands"
             value={brandGroups.length}
@@ -186,7 +210,7 @@ export default function Home() {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 gap-6 mb-8">
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">By Country</h3>
             <div className="space-y-2">
@@ -232,19 +256,40 @@ export default function Home() {
             </div>
           </Card>
         </div>
-
-        {/* Brands Grid */}
-        <div className="mb-4">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Brands
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400" aria-live="polite">
-            {brandGroups.length} {brandGroups.length === 1 ? 'brand' : 'brands'} in your collection
-          </p>
+            </>
+          )}
         </div>
 
+        {/* Brands Section */}
+        <div className="mb-8">
+          <button
+            onClick={() => setBrandsExpanded(!brandsExpanded)}
+            className="w-full flex items-center justify-between mb-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-expanded={brandsExpanded}
+          >
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Brands
+              </h2>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {brandGroups.length} {brandGroups.length === 1 ? 'brand' : 'brands'}
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${brandsExpanded ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {brandsExpanded && (
+            <>
+
         <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          className="grid grid-cols-1 gap-6"
           role="list"
           aria-label="Whiskey brands"
         >
@@ -266,6 +311,9 @@ export default function Home() {
             </p>
           </div>
         )}
+            </>
+          )}
+        </div>
 
         {/* Add Whiskey Form Modal */}
         {showAddForm && (
