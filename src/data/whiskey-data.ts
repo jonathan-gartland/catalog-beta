@@ -650,24 +650,6 @@ export const whiskeyCollection: WhiskeyBottle[] = [
     replacementCost: 80.00
   },
   {
-    name: "Testo Grain Liquor",
-    quantity: 1,
-    country: "US",
-    type: "Other",
-    region: "Portland, ME",
-    distillery: "Testo Distilling",
-    age: "0",
-    purchaseDate: "1/3/2026",
-    abv: 88.00,
-    size: "1L",
-    purchasePrice: 2.50,
-    status: "opened",
-    batch: "",
-    notes: "",
-    currentValue: 5.00,
-    replacementCost: 5.00
-  },
-  {
     name: "Weller 12yr ",
     quantity: 1,
     country: "US",
